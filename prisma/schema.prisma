@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cliente {
+  id_cliente     Int     @id @default(autoincrement())
+  nombre_cliente String  @db.VarChar(45)
+  direccion      String  @db.VarChar(100)
+  correo         String? @db.VarChar(60)
+  telefono       Int
+}
+
+model compra {
+  id_compra                  Int      @id @default(autoincrement())
+  importe                    Decimal  @db.Decimal(12, 2)
+  usuario_id_usuario         Int
+  proveedores_id_proveedores Int
+  fecha                      DateTime @db.Date
+
+  @@index([proveedores_id_proveedores], map: "fk_compra_proveedores1_idx")
+  @@index([usuario_id_usuario], map: "fk_compra_usuario_idx")
+}
+
+model compra_has_producto {
+  compra_id_compra Int
+  producto_sku     String @db.VarChar(30)
+  cantidad         Int
+
+  @@id([compra_id_compra, producto_sku])
+  @@index([compra_id_compra], map: "fk_compra_has_producto_compra1_idx")
+  @@index([producto_sku], map: "fk_compra_has_producto_producto1_idx")
+}
+
+model despacho {
+  iddespacho         Int      @id @default(autoincrement())
+  venta_id_compra    Int
+  fecha              DateTime @db.Date
+  usuario_id_usuario Int
+
+  @@index([usuario_id_usuario], map: "fk_despacho_usuario1_idx")
+  @@index([venta_id_compra], map: "fk_despacho_venta1_idx")
+}
+
+model posicion {
+  id_posicion       Int     @id @default(autoincrement())
+  almacen           Int
+  pasillo           Int
+  numero_frente     Int
+  numero_nivel      Int
+  producto_sku      String? @db.VarChar(30)
+  cantidad_producto Int?
+  ocupado           Boolean @default(false)
+  qr                Bytes
+
+  @@index([producto_sku], map: "fk_posicion_producto1_idx")
+}
+
+model producto_has_venta {
+  producto_sku    String @db.VarChar(30)
+  venta_id_compra Int
+  cantidad        String @db.VarChar(45)
+
+  @@id([producto_sku, venta_id_compra])
+  @@index([producto_sku], map: "fk_producto_has_venta_producto1_idx")
+  @@index([venta_id_compra], map: "fk_producto_has_venta_venta1_idx")
+}
+
+model producto_inv {
+  numero_pzs Int
+  sku        String @id @db.VarChar(30)
+}
+
+model producto_prov {
+  sku          String  @id @db.VarChar(30)
+  nombre       String  @db.VarChar(45)
+  foto         Bytes?
+  descripcion  String  @db.MediumText
+  costo_compra Decimal @db.Decimal(10, 2)
+  precio_venta Decimal @db.Decimal(10, 2)
+  peso         Float
+  volumen      Float
+}
+
+model proveedores {
+  id_proveedores Int     @id @default(autoincrement())
+  nombre         String  @db.VarChar(45)
+  direccion      String? @db.VarChar(45)
+  correo         String  @db.VarChar(45)
+  telefono       String  @db.VarChar(45)
+}
+
+model recepcion {
+  id_recepcion       Int      @id @default(autoincrement())
+  usuario_id_usuario Int
+  compra_id_compra   Int
+  fecha              DateTime @db.Date
+
+  @@index([compra_id_compra], map: "fk_recepcion_compra1_idx")
+  @@index([usuario_id_usuario], map: "fk_recepcion_usuario1_idx")
+}
+
+model usuario {
+  id_usuario Int    @id @default(autoincrement())
+  password   String @db.MediumText
+  almacen    String @db.MediumText
+  user       String @db.VarChar(45) @unique
+}
+
+model venta {
+  id_compra          Int      @id @default(autoincrement())
+  importe            Decimal  @db.Decimal(12, 2)
+  usuario_id_usuario Int
+  cliente_id_cliente Int
+  fecha              DateTime @db.Date
+
+  @@index([cliente_id_cliente], map: "fk_venta_cliente1_idx")
+  @@index([usuario_id_usuario], map: "fk_venta_usuario1_idx")
+}
