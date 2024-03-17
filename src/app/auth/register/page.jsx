@@ -2,30 +2,32 @@
 import React, { useState } from 'react'
 
 const page = () => {
-    const [user, setUser] = useState('');
-    const [password, setPassword] = useState('');
-    const [warehouseNumber, setWarehouseNumber] = useState('');
+    const [data, setData] = useState(null)
+    const handleOnChange = ({target:{name, value}}) => {
+        setData ({ ...data, [name]:value})
+    }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (async (e) => {
         e.preventDefault();
+        const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'aplication/json'
+            }
+        }) 
+        const resJSON = await res.json()
+        console.log(resJSON)
+      });
 
-        console.log('User:', user);
-        console.log('Password:', password);
-        console.log('Warehouse Number:', warehouseNumber);
-
-        setUser('');
-        setPassword('');
-        setWarehouseNumber('');
-      };
     return (
         <form className="flex flex-col items-center justify-center h-screen" onSubmit={handleSubmit}>
             <div className="mb-4">
                 <label htmlFor="user" className="block">User:</label>
                 <input
                     type="text"
-                    id="user"
-                    value={user}
-                    onChange={(e) => setUser(e.target.value)}
+                    name="user"
+                    onChange={handleOnChange}
                     className="border border-gray-400 rounded-md px-4 py-2 w-full text-black"
                 />
             </div>
@@ -33,9 +35,8 @@ const page = () => {
                 <label htmlFor="password" className="block">Password:</label>
                 <input
                     type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="password"
+                    onChange={handleOnChange}
                     className="border border-gray-400 rounded-md px-4 py-2 w-full text-black"
                 />
             </div>
@@ -43,9 +44,8 @@ const page = () => {
                 <label htmlFor="warehouseNumber" className="block">Warehouse Number:</label>
                 <input
                     type="number"
-                    id="warehouseNumber"
-                    value={warehouseNumber}
-                    onChange={(e) => setWarehouseNumber(e.target.value)}
+                    name="warehouseNumber"
+                    onChange={handleOnChange}
                     className="border border-gray-400 rounded-md px-4 py-2 w-full text-black"
                 />
             </div>
