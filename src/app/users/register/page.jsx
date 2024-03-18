@@ -9,7 +9,7 @@ const page = () => {
 
     const handleSubmit = (async (e) => {
         e.preventDefault();
-        const res = await fetch('/api/auth/register', {
+        const res = await fetch('/api/auth/create', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
