@@ -4,7 +4,7 @@ import db from '@/libs/db'
 export async function GET(){
     try{
         const data = await db.usuario.findMany();
-
+        
         console.log(data);
 
         return NextResponse.json(JSON.stringify(data));

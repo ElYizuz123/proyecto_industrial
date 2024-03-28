@@ -3,11 +3,13 @@ import db from '@/libs/db'
 
 export async function POST(request){
     const data = await request.json();
+    const bcrypt = require("bcrypt");
 
     console.log(data);
+    const hashPass = await bcrypt.hash(data.password, 10);
     const user = await db.usuario.update({
         where:{
-            id: data.id,
+            id_usuario: parseInt(data.id),
         },
         data:{
             password: hashPass,
@@ -15,7 +17,6 @@ export async function POST(request){
             almacen: data.warehouseNumber
         }
     })
-    const usuariosJSON = JSON.stringify(user);
     console.log(user)
-    return NextResponse.json(usuariosJSON);
+    return NextResponse.json('actualizado');
 }
